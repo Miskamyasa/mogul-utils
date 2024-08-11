@@ -1,6 +1,9 @@
 package utils
 
-import "github.com/gofiber/fiber/v2/log"
+import (
+	"github.com/gofiber/fiber/v2/log"
+	"os"
+)
 
 func Notify(msg string, err error) {
 	// TODO: send admin notification
@@ -9,5 +12,5 @@ func Notify(msg string, err error) {
 
 func Fatal(msg string, err error) {
 	Notify(msg, err)
-	log.Fatalf("%s: %v", msg, err)
+	os.Exit(1)
 }
