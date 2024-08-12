@@ -51,7 +51,7 @@ func GetCache[T any](key string, payload T) error {
 	return nil
 }
 
-func SetCache[T any](key string, payload T) error {
+func SetCache[T any](key string, payload T, TTL time.Duration) error {
 	if os.Getenv("ENV") == "development" {
 		return nil
 	}
@@ -60,7 +60,7 @@ func SetCache[T any](key string, payload T) error {
 		Ctx:   ctx,
 		Key:   key,
 		Value: payload,
-		TTL:   time.Duration(cacheTTL) * time.Second,
+		TTL:   TTL,
 	})
 	if err != nil {
 		return err
