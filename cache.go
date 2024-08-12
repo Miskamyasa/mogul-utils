@@ -38,6 +38,10 @@ func InitCache() *redis.Client {
 	return client
 }
 
+func CreateDuration(seconds int) time.Duration {
+	return time.Duration(seconds) * time.Second
+}
+
 func GetCache[T any](key string, payload T) error {
 	if os.Getenv("ENV") == "development" {
 		return nil
