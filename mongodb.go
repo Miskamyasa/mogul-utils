@@ -14,7 +14,7 @@ var (
 	mongoCtx = context.TODO()
 )
 
-func InitMongoDB() (context.Context, *mongo.Database) {
+func InitMongoDB() (context.Context, *mongo.Client) {
 	ctx, cancel := context.WithTimeout(mongoCtx, 10*time.Second)
 	defer cancel()
 
@@ -33,7 +33,7 @@ func InitMongoDB() (context.Context, *mongo.Database) {
 		Fatal("Failed to retrieve a database", err)
 	}
 
-	return mongoCtx, mongoDB
+	return mongoCtx, client
 }
 
 func GetMongoDB() *mongo.Database {
