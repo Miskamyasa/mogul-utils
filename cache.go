@@ -12,27 +12,25 @@ import (
 
 var instance *cache.Cache
 
-var ctx = context.TODO()
-
-var cacheTTL = 3600
+var cacheCtx = context.TODO()
 
 func InitCache() *redis.Client {
 	client := redis.NewClient(&redis.Options{
 		Addr: "localhost:6379",
 	})
-	_, err := client.Ping(ctx).Result()
+	_, err := client.Ping(cacheCtx).Result()
 	if err != nil {
 		Fatal("Redis connection was refused: %s", err)
 	}
 
-	envTTL, err := strconv.Atoi(os.Getenv("CACHE_TTL"))
-	if err == nil {
-		cacheTTL = envTTL
+	LFUSize, err := strconv.Atoi(os.Getenv("LFU_SIZE"))
+	if err != nil {
+		LFUSize = 1000
 	}
 
 	instance = cache.New(&cache.Options{
 		Redis:      client,
-		LocalCache: cache.NewTinyLFU(cacheTTL, time.Second),
+		LocalCache: cache.NewTinyLFU(LFUSize, time.Second),
 	})
 
 	return client
@@ -47,7 +45,7 @@ func GetCache[T any](key string, payload T) error {
 		return nil
 	}
 
-	err := instance.Get(ctx, key, payload)
+	err := instance.Get(cacheCtx, key, payload)
 	if err != nil {
 		return err
 	}
@@ -61,7 +59,7 @@ func SetCache[T any](key string, payload T, TTL time.Duration) error {
 	}
 
 	err := instance.Set(&cache.Item{
-		Ctx:   ctx,
+		Ctx:   cacheCtx,
 		Key:   key,
 		Value: payload,
 		TTL:   TTL,
