@@ -11,7 +11,7 @@ import (
 
 var (
 	mongoDB  *mongo.Database
-	mongoCtx = context.TODO()
+	mongoCtx = context.Background()
 )
 
 func InitMongoDB() (context.Context, *mongo.Client) {

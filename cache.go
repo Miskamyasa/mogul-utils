@@ -12,11 +12,11 @@ import (
 
 var instance *cache.Cache
 
-var cacheCtx = context.TODO()
+var cacheCtx = context.Background()
 
 func InitCache() *redis.Client {
 	client := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: os.Getenv("REDIS_URL"),
 	})
 	_, err := client.Ping(cacheCtx).Result()
 	if err != nil {
