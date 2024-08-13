@@ -36,6 +36,6 @@ func InitMongoDB() (context.Context, *mongo.Client) {
 	return mongoCtx, client
 }
 
-func GetMongoDB() *mongo.Database {
-	return mongoDB
+func GetMongoDB() (context.Context, *mongo.Database) {
+	return mongoCtx, mongoDB
 }

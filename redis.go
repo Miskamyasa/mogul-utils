@@ -28,6 +28,6 @@ func InitRedis() *redis.Client {
 	return redisClient
 }
 
-func GetRedis() *redis.Client {
-	return redisClient
+func GetRedis() (context.Context, *redis.Client) {
+	return redisCtx, redisClient
 }
