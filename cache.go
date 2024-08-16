@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"encoding/json"
 	"os"
 	"strconv"
 	"time"
@@ -40,12 +41,18 @@ func CreateDuration(seconds int) time.Duration {
 	return time.Duration(seconds) * time.Second
 }
 
-func GetCache[T any](key string, payload T) error {
+func GetCache[T any](key string, payload *T) error {
 	if os.Getenv("ENV") == "development" {
 		return nil
 	}
 
-	err := instance.Get(cacheCtx, key, payload)
+	var jsonPayload []byte
+	err := instance.Get(cacheCtx, key, &jsonPayload)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(jsonPayload, payload)
 	if err != nil {
 		return err
 	}
@@ -58,10 +65,15 @@ func SetCache[T any](key string, payload T, TTL time.Duration) error {
 		return nil
 	}
 
-	err := instance.Set(&cache.Item{
+	jsonPayload, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	err = instance.Set(&cache.Item{
 		Ctx:   cacheCtx,
 		Key:   key,
-		Value: payload,
+		Value: jsonPayload, // Store JSON bytes
 		TTL:   TTL,
 	})
 	if err != nil {
