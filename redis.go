@@ -10,10 +10,12 @@ import (
 
 var (
 	redisClient *redis.Client
-	redisCtx    = context.Background()
+	redisCtx    *context.Context
 )
 
-func InitRedis() *redis.Client {
+func InitRedis(ctx *context.Context) *redis.Client {
+	redisCtx = ctx
+
 	config := &redis.Options{
 		Addr: os.Getenv("REDIS_URL"),
 	}
@@ -24,7 +26,7 @@ func InitRedis() *redis.Client {
 
 	redisClient = redis.NewClient(config)
 
-	_, err := redisClient.Ping(redisCtx).Result()
+	_, err := redisClient.Ping(*ctx).Result()
 	if err != nil {
 		log.Fatalf("Failed to connect to Redis: %v", err)
 	}
@@ -32,6 +34,6 @@ func InitRedis() *redis.Client {
 	return redisClient
 }
 
-func GetRedis() (context.Context, *redis.Client) {
+func GetRedis() (*context.Context, *redis.Client) {
 	return redisCtx, redisClient
 }
