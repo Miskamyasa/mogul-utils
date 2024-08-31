@@ -2,7 +2,7 @@ package datasource
 
 import (
 	"context"
-	"github.com/Miskamyasa/mogul-utils/notify"
+	"github.com/Miskamyasa/mogul-utils/alerts"
 	"os"
 	"time"
 
@@ -21,17 +21,17 @@ func InitMongoDB() (context.Context, *mongo.Client) {
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGODB_URL")))
 	if err != nil {
-		notify.Fatal("Failed to connect to MongoDB", err)
+		alerts.Fatal("Failed to connect to MongoDB", err)
 	}
 
 	err = client.Ping(ctx, nil)
 	if err != nil {
-		notify.Fatal("Failed to ping MongoDB", err)
+		alerts.Fatal("Failed to ping MongoDB", err)
 	}
 
 	mongoDB = client.Database(os.Getenv("MONGODB_NAME"))
 	if mongoDB == nil {
-		notify.Fatal("Failed to retrieve a database", err)
+		alerts.Fatal("Failed to retrieve a database", err)
 	}
 
 	return mongoCtx, client

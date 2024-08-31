@@ -2,7 +2,7 @@ package datasource
 
 import (
 	"database/sql"
-	"github.com/Miskamyasa/mogul-utils/notify"
+	"github.com/Miskamyasa/mogul-utils/alerts"
 	"os"
 
 	_ "github.com/lib/pq"
@@ -16,12 +16,12 @@ func InitDB() *sql.DB {
 
 	conn, err = sql.Open("postgres", url)
 	if err != nil {
-		notify.Fatal("Failed to connect to the Database!", err)
+		alerts.Fatal("Failed to connect to the Database!", err)
 	}
 
 	err = conn.Ping()
 	if err != nil {
-		notify.Fatal("Failed to ping the database", err)
+		alerts.Fatal("Failed to ping the database", err)
 	}
 
 	return conn
