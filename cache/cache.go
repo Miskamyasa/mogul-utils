@@ -1,8 +1,9 @@
-package utils
+package cache
 
 import (
 	"context"
 	"encoding/json"
+	"github.com/Miskamyasa/mogul-utils/notify"
 	"os"
 	"strconv"
 	"time"
@@ -21,7 +22,7 @@ func InitCache() *redis.Client {
 	})
 	_, err := client.Ping(cacheCtx).Result()
 	if err != nil {
-		Fatal("Redis connection was refused: %s", err)
+		notify.Fatal("Redis connection was refused: %s", err)
 	}
 
 	LFUSize, err := strconv.Atoi(os.Getenv("LFU_SIZE"))

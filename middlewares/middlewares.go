@@ -1,7 +1,8 @@
-package utils
+package middlewares
 
 import (
 	"encoding/json"
+	"github.com/Miskamyasa/mogul-utils/cache"
 	"net/http"
 )
 
@@ -14,7 +15,7 @@ func GenerateCacheKey(req *http.Request) string {
 func CacheMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		var payload *interface{}
-		err := GetCache(GenerateCacheKey(req), &payload)
+		err := cache.GetCache(GenerateCacheKey(req), &payload)
 		if err == nil && payload != nil {
 			w.Header().Set("Content-Type", "application/json")
 			err := json.NewEncoder(w).Encode(payload)

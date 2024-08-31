@@ -1,16 +1,16 @@
-package utils
+package notify
 
 import (
 	"log"
 	"os"
 )
 
-func Notify(msg string, err error) {
+func Send(msg string, err error) {
 	// TODO: send admin notification
 	log.Printf("%s: %v", msg, err)
 }
 
 func Fatal(msg string, err error) {
-	Notify(msg, err)
+	Send(msg, err)
 	os.Exit(1)
 }
