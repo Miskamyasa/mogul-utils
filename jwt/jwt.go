@@ -20,6 +20,18 @@ func CreateJWTToken(key []byte, payload Payload) (string, error) {
 	return tokenString, nil
 }
 
+func keyFunc(key []byte) jwt.Keyfunc {
+	return func(token *jwt.Token) (interface{}, error) {
+		return key, nil
+	}
+}
+
+func keyFuncNil() jwt.Keyfunc {
+	return func(token *jwt.Token) (interface{}, error) {
+		return nil, nil
+	}
+}
+
 func CheckSignature(tokenString string, key []byte) (bool, error) {
 	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return key, nil
@@ -33,14 +45,12 @@ func CheckSignature(tokenString string, key []byte) (bool, error) {
 func ParseJWTToken(tokenString string, key []byte, check bool) (Payload, error) {
 	claims := jwt.MapClaims{}
 	if check {
-		_, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-			return key, nil
-		})
+		_, err := jwt.ParseWithClaims(tokenString, claims, keyFunc(key))
 		if err != nil {
 			return Payload{}, err
 		}
 	} else {
-		_, err := jwt.ParseWithClaims(tokenString, claims, nil)
+		_, err := jwt.ParseWithClaims(tokenString, claims, keyFuncNil())
 		if err != nil {
 			return Payload{}, err
 		}
