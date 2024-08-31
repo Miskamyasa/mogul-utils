@@ -3,6 +3,7 @@ package middlewares
 import (
 	"encoding/json"
 	"github.com/Miskamyasa/mogul-utils/cache"
+	"github.com/Miskamyasa/mogul-utils/response"
 	"net/http"
 )
 
@@ -25,5 +26,16 @@ func CacheMiddleware(next http.Handler) http.Handler {
 			return
 		}
 		next.ServeHTTP(w, req)
+	})
+}
+
+func RecoveryMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if err := recover(); err != nil {
+				response.SendInternalServerError(w)
+			}
+		}()
+		next.ServeHTTP(w, r)
 	})
 }
