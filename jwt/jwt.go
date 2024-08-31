@@ -7,7 +7,11 @@ type Payload struct {
 	ServerGroup string `json:"server_group"`
 }
 
-func CreateJWTToken(key []byte, payload Payload) (string, error) {
+var (
+	parser = jwt.NewParser()
+)
+
+func CreateToken(key []byte, payload Payload) (string, error) {
 	claims := jwt.MapClaims{
 		"player_id":    payload.PlayerID,
 		"server_group": payload.ServerGroup,
@@ -20,18 +24,6 @@ func CreateJWTToken(key []byte, payload Payload) (string, error) {
 	return tokenString, nil
 }
 
-func keyFunc(key []byte) jwt.Keyfunc {
-	return func(token *jwt.Token) (interface{}, error) {
-		return key, nil
-	}
-}
-
-func keyFuncNil() jwt.Keyfunc {
-	return func(token *jwt.Token) (interface{}, error) {
-		return nil, nil
-	}
-}
-
 func CheckSignature(tokenString string, key []byte) (bool, error) {
 	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return key, nil
@@ -42,18 +34,28 @@ func CheckSignature(tokenString string, key []byte) (bool, error) {
 	return true, nil
 }
 
-func ParseJWTToken(tokenString string, key []byte, check bool) (Payload, error) {
+func ParseUnverified(tokenString string) (Payload, error) {
+	claims := jwt.MapClaims{
+		"player_id":    "",
+		"server_group": "",
+	}
+	_, _, err := parser.ParseUnverified(tokenString, claims)
+	if err != nil {
+		return Payload{}, err
+	}
+	return Payload{
+		PlayerID:    claims["player_id"].(string),
+		ServerGroup: claims["server_group"].(string),
+	}, nil
+}
+
+func ParseToken(tokenString string, key []byte) (Payload, error) {
 	claims := jwt.MapClaims{}
-	if check {
-		_, err := jwt.ParseWithClaims(tokenString, claims, keyFunc(key))
-		if err != nil {
-			return Payload{}, err
-		}
-	} else {
-		_, err := jwt.ParseWithClaims(tokenString, claims, keyFuncNil())
-		if err != nil {
-			return Payload{}, err
-		}
+	_, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return key, nil
+	})
+	if err != nil {
+		return Payload{}, err
 	}
 	return Payload{
 		PlayerID:    claims["player_id"].(string),
