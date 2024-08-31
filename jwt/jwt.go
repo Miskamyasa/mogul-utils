@@ -3,12 +3,14 @@ package jwt
 import "github.com/golang-jwt/jwt/v5"
 
 type Payload struct {
-	PlayerID string `json:"player_id"`
+	PlayerID    string `json:"player_id"`
+	ServerGroup string `json:"server_group"`
 }
 
 func CreateJWTToken(key []byte, payload Payload) (string, error) {
 	claims := jwt.MapClaims{
-		"player_id": payload.PlayerID,
+		"player_id":    payload.PlayerID,
+		"server_group": payload.ServerGroup,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
 	tokenString, err := token.SignedString(key)
@@ -27,6 +29,7 @@ func ParseJWTToken(tokenString string, key []byte) (Payload, error) {
 		return Payload{}, err
 	}
 	return Payload{
-		PlayerID: claims["player_id"].(string),
+		PlayerID:    claims["player_id"].(string),
+		ServerGroup: claims["server_group"].(string),
 	}, nil
 }
