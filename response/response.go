@@ -30,3 +30,12 @@ func SendBadRequest(w http.ResponseWriter) {
 		alerts.Send("Error writing the response", err)
 	}
 }
+
+func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	_, err := w.Write([]byte("OK"))
+	if err != nil {
+		alerts.Send("Error writing the response", err)
+		return
+	}
+}
