@@ -20,13 +20,30 @@ func CreateJWTToken(key []byte, payload Payload) (string, error) {
 	return tokenString, nil
 }
 
-func ParseJWTToken(tokenString string, key []byte) (Payload, error) {
-	claims := jwt.MapClaims{}
-	_, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+func CheckSignature(tokenString string, key []byte) (bool, error) {
+	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return key, nil
 	})
 	if err != nil {
-		return Payload{}, err
+		return false, err
+	}
+	return true, nil
+}
+
+func ParseJWTToken(tokenString string, key []byte, check bool) (Payload, error) {
+	claims := jwt.MapClaims{}
+	if check {
+		_, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+			return key, nil
+		})
+		if err != nil {
+			return Payload{}, err
+		}
+	} else {
+		_, err := jwt.ParseWithClaims(tokenString, claims, nil)
+		if err != nil {
+			return Payload{}, err
+		}
 	}
 	return Payload{
 		PlayerID:    claims["player_id"].(string),
