@@ -12,7 +12,7 @@ func CreateJWTToken(key []byte, payload Payload) (string, error) {
 		"player_id":    payload.PlayerID,
 		"server_group": payload.ServerGroup,
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(key)
 	if err != nil {
 		return "", err
