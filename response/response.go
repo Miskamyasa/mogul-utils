@@ -23,9 +23,9 @@ func SendInternalServerError(w http.ResponseWriter) {
 	}
 }
 
-func SendBadRequest(w http.ResponseWriter) {
+func SendBadRequest(w http.ResponseWriter, msg string) {
 	w.WriteHeader(http.StatusBadRequest)
-	_, err := w.Write([]byte("Bad Request"))
+	_, err := w.Write([]byte("Bad Request! " + msg))
 	if err != nil {
 		alerts.Send("Error writing the response", err)
 	}
