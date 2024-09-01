@@ -2,9 +2,14 @@ package middlewares
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+	"runtime/debug"
+
+	"github.com/Miskamyasa/mogul-utils/alerts"
 	"github.com/Miskamyasa/mogul-utils/cache"
 	"github.com/Miskamyasa/mogul-utils/response"
-	"net/http"
 )
 
 func GenerateCacheKey(req *http.Request) string {
@@ -33,6 +38,21 @@ func RecoveryMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
+				// Convert interface{} to an error
+				var errMsg error
+				if e, ok := err.(error); ok {
+					errMsg = e
+				} else {
+					errMsg = fmt.Errorf("%v", err)
+				}
+
+				// Log the error and stack trace
+				log.Printf("Recovered from panic: %v\nStack trace: %s", errMsg, debug.Stack())
+
+				// Send alert and internal server error response
+				alerts.Send("RecoveryMiddleware", errMsg)
+
+				// Send internal server error response
 				response.SendInternalServerError(w)
 			}
 		}()
