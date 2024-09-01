@@ -50,7 +50,7 @@ func RecoveryMiddleware(next http.Handler) http.Handler {
 				log.Printf("Recovered from panic: %v\nStack trace: %s", errMsg, debug.Stack())
 
 				// Send alert and internal server error response
-				alerts.Send("RecoveryMiddleware", errMsg)
+				alerts.Send("Panic recovery", errMsg)
 
 				// Send internal server error response
 				response.SendInternalServerError(w)
