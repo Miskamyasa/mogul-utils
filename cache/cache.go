@@ -3,10 +3,11 @@ package cache
 import (
 	"context"
 	"encoding/json"
-	"github.com/Miskamyasa/mogul-utils/alerts"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/Miskamyasa/mogul-utils/alerts"
 
 	"github.com/go-redis/cache/v9"
 	"github.com/redis/go-redis/v9"
@@ -22,7 +23,7 @@ func InitCache() *redis.Client {
 	})
 	_, err := client.Ping(cacheCtx).Result()
 	if err != nil {
-		alerts.Fatal("Redis connection was refused: %s", err)
+		alerts.Fatal("Failed to connect to Redis", err)
 	}
 
 	LFUSize, err := strconv.Atoi(os.Getenv("LFU_SIZE"))
