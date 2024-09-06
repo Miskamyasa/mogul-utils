@@ -14,7 +14,7 @@ var (
 	ctx    context.Context
 )
 
-func InitFlags() *openfeature.Client {
+func InitFlags() func() {
 	// Use flagd as the OpenFeature provider
 	err := openfeature.SetProviderAndWait(flagd.NewProvider())
 	if err != nil {
@@ -38,7 +38,7 @@ func InitFlags() *openfeature.Client {
 	//     os.Getenv("SERVICE_VERSION"),
 	// )
 
-	return client
+	return openfeature.Shutdown
 }
 
 func GetClient() *openfeature.Client {
