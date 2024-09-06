@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"runtime/debug"
 
 	"github.com/Miskamyasa/mogul-utils/alerts"
@@ -56,6 +57,18 @@ func RecoveryMiddleware(next http.Handler) http.Handler {
 				response.SendInternalServerError(w)
 			}
 		}()
+		next.ServeHTTP(w, r)
+	})
+}
+
+func AuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token := r.Header.Get("auth-token")
+		if token != os.Getenv("AUTH_TOKEN") {
+			alerts.Send("Unauthorized request. Invalid auth token or token is nil", nil)
+			response.SendInternalServerError(w)
+			return
+		}
 		next.ServeHTTP(w, r)
 	})
 }

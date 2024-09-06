@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/Miskamyasa/mogul-utils/alerts"
+	"github.com/go-logr/zerologr"
 	flagd "github.com/open-feature/go-sdk-contrib/providers/flagd/pkg"
 	"github.com/open-feature/go-sdk/openfeature"
 )
@@ -15,8 +16,14 @@ var (
 )
 
 func InitFlags() {
+	zl := alerts.CreateLogger().With().Str("component", "flags").Logger()
+	logger := zerologr.New(&zl)
+
 	// Use flagd as the OpenFeature provider
-	err := openfeature.SetProviderAndWait(flagd.NewProvider())
+	err := openfeature.SetProviderAndWait(flagd.NewProvider(
+		flagd.WithInProcessResolver(),
+		flagd.WithLogger(logger),
+	))
 	if err != nil {
 		alerts.Fatal("Failed to set OpenFeature (flagd) provider", err)
 		return

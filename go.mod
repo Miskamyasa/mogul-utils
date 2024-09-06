@@ -8,7 +8,9 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/redis/go-redis/v9 v9.6.1
 	go.mongodb.org/mongo-driver v1.16.1
+	github.com/go-logr/zerologr v1.2.3
 )
+
 
 require (
 	buf.build/gen/go/open-feature/flagd/connectrpc/go v1.16.1-20240215170432-1e611e2999cc.1 // indirect
