@@ -52,14 +52,29 @@ func GetClient() *openfeature.Client {
 	return client
 }
 
-func GetBoolFlag(flag string, defaultValue bool) (bool, error) {
-	return client.BooleanValue(ctx, flag, defaultValue, client.EvaluationContext())
+func GetBoolFlag(flag string, defaultValue bool) bool {
+	val, err := client.BooleanValue(ctx, flag, defaultValue, client.EvaluationContext())
+	if err != nil {
+		alerts.Send("Failed to get flag", err)
+		return defaultValue
+	}
+	return val
 }
 
-func GetStringFlag(flag string, defaultValue string) (string, error) {
-	return client.StringValue(ctx, flag, defaultValue, client.EvaluationContext())
+func GetStringFlag(flag string, defaultValue string) string {
+	val, err := client.StringValue(ctx, flag, defaultValue, client.EvaluationContext())
+	if err != nil {
+		alerts.Send("Failed to get flag", err)
+		return defaultValue
+	}
+	return val
 }
 
-func GetIntFlag(flag string, defaultValue int64) (int64, error) {
-	return client.IntValue(ctx, flag, defaultValue, client.EvaluationContext())
+func GetIntFlag(flag string, defaultValue int64) int64 {
+	val, err := client.IntValue(ctx, flag, defaultValue, client.EvaluationContext())
+	if err != nil {
+		alerts.Send("Failed to get flag", err)
+		return defaultValue
+	}
+	return val
 }
