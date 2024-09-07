@@ -21,7 +21,6 @@ func InitFlags() func() {
 
 	// Use flagd as the OpenFeature provider
 	err := openfeature.SetProviderAndWait(flagd.NewProvider(
-		flagd.WithInProcessResolver(),
 		flagd.WithLogger(logger),
 	))
 	if err != nil {
