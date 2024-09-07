@@ -15,7 +15,7 @@ var (
 	ctx    context.Context
 )
 
-func InitFlags() {
+func InitFlags() func() {
 	zl := alerts.CreateLogger().With().Str("component", "flags").Logger()
 	logger := zerologr.New(&zl)
 
@@ -26,7 +26,7 @@ func InitFlags() {
 	))
 	if err != nil {
 		alerts.Fatal("Failed to set OpenFeature (flagd) provider", err)
-		return
+		return nil
 	}
 
 	ctx = context.Background()
@@ -44,6 +44,8 @@ func InitFlags() {
 	//     os.Getenv("SERVICE_NAME"),
 	//     os.Getenv("SERVICE_VERSION"),
 	// )
+
+	return openfeature.Shutdown
 }
 
 func GetClient() *openfeature.Client {
